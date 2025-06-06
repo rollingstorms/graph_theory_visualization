@@ -52,9 +52,7 @@ http://127.0.0.1:8050
 ├── eigen_app.py            # Main Dash application
 ├── eigen_documentation.py  # Documentation content
 ├── requirements.txt        # Python dependencies
-├── assets/                 # Static files (CSS, images)
-├── data/                   # Optional example graphs
-└── tests/                  # Optional tests
+├── readme.md               # Readme
 ```
 
 ## Planned Features
