@@ -349,8 +349,13 @@ def register_callbacks(app):
                 clustering_data = {'clustering_method': clustering_method}
             # Fix: always provide a valid dict for .get
             graph_data = clustering_data.get('graph', graph_tools_data.get('graph', graph_tools_data))
-            from graph_utils import run_clustering
-            cluster_labels, y_prime = run_clustering(graph_data, clustering_method, alpha=alpha, e=e, k=k, custom_code=clustering_code, return_y=True)
+            from graph_utils import run_clustering, CustomClusteringError
+            error_msg = None
+            try:
+                cluster_labels, y_prime = run_clustering(graph_data, clustering_method, alpha=alpha, e=e, k=k, custom_code=clustering_code, return_y=True)
+            except CustomClusteringError as exc:
+                cluster_labels, y_prime = {}, None
+                error_msg = str(exc)
             clustering_data = {
                 'graph': graph_data,
                 'cluster_labels': cluster_labels,
@@ -361,6 +366,8 @@ def register_callbacks(app):
                 'k': k,
                 'y_prime': y_prime.tolist() if hasattr(y_prime, 'tolist') else y_prime
             }
+            if error_msg:
+                clustering_data['error'] = error_msg
             return clustering_data, graph_tools_data
         else:
             return clustering_data, graph_tools_data
