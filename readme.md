@@ -17,6 +17,8 @@ An interactive Dash-based tool for exploring and analyzing graphs through spectr
 
 - **Matrix Aggregation**:
   - Analyze effects of multiple (E, K) parameter pairs.
+- **Custom Clustering**:
+  - Select built-in algorithms or supply Python code for your own clustering routine.
 
 - **Detailed In-App Documentation**:
   - Comprehensive explanations of spectral graph theory concepts.

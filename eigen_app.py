@@ -64,6 +64,12 @@ def build_control(control_id, control_cfg):
             options=[{"label": str(opt), "value": opt} for opt in control_cfg.get("options", [])],
             value=control_cfg.get("value")
         )
+    elif t == "textarea":
+        return dcc.Textarea(
+            id=control_cfg["id"],
+            value=control_cfg.get("value", ""),
+            style={"width": "100%", "height": f"{control_cfg.get('height', 100)}px"}
+        )
     else:
         return html.Div(f"Unknown control type: {t}", id=control_cfg["id"])
 
