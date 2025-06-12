@@ -27,10 +27,11 @@ def register_callbacks(app):
         [Input('tabs', 'value'),
          Input('graph-tools-store', 'data'),
          Input('clustering-store', 'data'),
-         Input('matrix-l', 'figure')],
+         Input('e-input', 'value'),
+         Input('k-slider', 'value')],
         prevent_initial_call=False
     )
-    def update_graph_figure(tab, graph_tools_data, clustering_data, matrix_l_fig):
+    def update_graph_figure(tab, graph_tools_data, clustering_data, e_value, k_value):
         import traceback
         try:
             # Ensure stores are always dicts, never None
@@ -51,39 +52,29 @@ def register_callbacks(app):
                         G.add_edge(u, v)
                 # Use stored positions for visualization
                 pos2d = {n: (props['x'], props['y']) for n, props in nodes.items()}
-                node_colors = None
                 edge_colors = None
                 colormap = px.colors.sequential.Plasma
-                use_node_cmap = False
                 use_edge_cmap = False
-                # Only use matrix_l_fig if present and on tab-graph
-                if matrix_l_fig and "data" in matrix_l_fig and len(matrix_l_fig["data"]) > 0:
-                    z = matrix_l_fig["data"][0].get("z")
-                    if z is not None:
-                        try:
-                            # Fix: if z is a dict (e.g., from plotly), extract array
-                            if isinstance(z, dict):
-                                # Try common keys for array data
-                                if '_inputArray' in z:
-                                    z = z['_inputArray']
-                                elif 'flat' in z:
-                                    z = z['flat']
-                                else:
-                                    # fallback: try to get first array-like value
-                                    arr = next((v for v in z.values() if isinstance(v, (list, np.ndarray))), None)
-                                    if arr is not None:
-                                        z = arr
-                                    else:
-                                        z = None
-                            if z is not None and isinstance(z, (list, np.ndarray)):
-                                node_colors = np.array(z)
-                                use_node_cmap = True
-                            else:
-                                node_colors = None
-                                use_node_cmap = False
-                        except Exception:
-                            node_colors = None
-                            use_node_cmap = False
+                # Compute Laplacian diagonal for node coloring
+                node_colors = "LightSkyBlue"
+                use_node_cmap = False
+                if len(nodes) > 0:
+                    node_list = list(nodes.keys())
+                    index = {n: i for i, n in enumerate(node_list)}
+                    A = np.zeros((len(node_list), len(node_list)))
+                    for u, v in edges:
+                        if u in index and v in index and u != v:
+                            i, j = index[u], index[v]
+                            A[i, j] = 1
+                            A[j, i] = 1
+                    degs = A.sum(axis=1)
+                    e = e_value if e_value is not None else -0.5
+                    k_val = int(k_value) if k_value is not None else 1
+                    D_e = np.diag(np.power(degs, e))
+                    L = D_e @ A @ D_e
+                    L = np.linalg.matrix_power(L, k_val) if k_val == int(k_val) else L
+                    node_colors = np.diag(L)
+                    use_node_cmap = True
                 if node_colors is None or len(nodes) == 0 or (use_node_cmap and len(node_colors) != len(nodes)):
                     node_colors = "LightSkyBlue"
                 if edge_colors is None or (use_edge_cmap and len(edge_colors) != G.number_of_edges()):
@@ -207,7 +198,7 @@ def register_callbacks(app):
                 )
                 return fig
             elif tab == 'tab-clustering':
-                # Do NOT reference matrix_l_fig at all here!
+                # Laplacian values are not required for clustering tab visualization
                 nodes = clustering_data.get('nodes', {})
                 edges = clustering_data.get('edges', [])
                 G = nx.Graph()
