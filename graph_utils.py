@@ -20,7 +20,7 @@ def default_graph():
     edges = [(str(u), str(v)) for u, v in G.edges()]
     return {'nodes': nodes, 'edges': edges}
 
-def get_tab_layout(tab, graph_data, clustering_method='spectral_lpa', clustering_step=0, clustering_node_order=None):
+def get_tab_layout(tab, graph_data, clustering_method='spectral_lpa', clustering_step=0, clustering_node_order=None, custom_code=None):
     """
     Return the layout for each tab, allowing custom order of visualization and settings modules.
     """
@@ -48,7 +48,7 @@ def get_tab_layout(tab, graph_data, clustering_method='spectral_lpa', clustering
             e = -0.5
             k = 5
             try:
-                cluster_labels, y_prime = run_clustering(graph_data, 'spectral_lpa', alpha=alpha, e=e, k=k, return_y=True)
+                cluster_labels, y_prime = run_clustering(graph_data, clustering_method, alpha=alpha, e=e, k=k, custom_code=custom_code, return_y=True)
             except Exception:
                 cluster_labels, y_prime = None, None
         # Only show the main graph and clustering controls, not matrix/stacked/agg vizzes
@@ -143,7 +143,7 @@ def update_graph_store(add_node_clicks, remove_node_clicks, add_edge_clicks, rem
     return graph_data
 
 
-def run_clustering(graph_data, method, alpha=0.5, e=-0.5, k=5, return_y=False):
+def run_clustering(graph_data, method, alpha=0.5, e=-0.5, k=5, custom_code=None, return_y=False):
     import networkx as nx
     import numpy as np
     nodes = list(graph_data.get('nodes', {}).keys())
@@ -163,11 +163,25 @@ def run_clustering(graph_data, method, alpha=0.5, e=-0.5, k=5, return_y=False):
         if return_y:
             return {node: int(labels[node_idx[node]]) for node in nodes}, Y
         return {node: int(labels[node_idx[node]]) for node in nodes}
-    else:
-        # fallback: all nodes in one cluster
-        if return_y:
-            return {n: 0 for n in nodes}, Y
-        return {n: 0 for n in nodes}
+    elif method == 'custom' and custom_code:
+        local_env = {"G": G, "nx": nx, "np": np, "nodes": nodes, "Y": Y}
+        try:
+            exec(custom_code, {}, local_env)
+            labels = local_env.get("labels")
+            if labels is None:
+                raise ValueError("Custom clustering code must define 'labels'")
+            labels = np.asarray(labels).astype(int)
+            cluster_map = {node: int(labels[node_idx[node]]) for node in nodes}
+            Y_out = np.asarray(local_env.get("Y", Y))
+            if return_y:
+                return cluster_map, Y_out
+            return cluster_map
+        except Exception:
+            pass
+    # fallback: all nodes in one cluster
+    if return_y:
+        return {n: 0 for n in nodes}, Y
+    return {n: 0 for n in nodes}
 
 def graph_visualization_layout(graph_data, cluster_labels=None):
     import plotly.graph_objs as go

@@ -18,7 +18,8 @@ def register_callbacks(app):
         clustering_method = clustering_store.get('clustering_method', 'lpa') if clustering_store else 'lpa'
         clustering_step = clustering_store.get('clustering_step', 0) if clustering_store else 0
         clustering_node_order = clustering_store.get('clustering_node_order', '') if clustering_store else ''
-        return render_tab_content(tab, graph_data, clustering_method, clustering_step, clustering_node_order)
+        custom_code = clustering_store.get('custom_code') if clustering_store else None
+        return render_tab_content(tab, graph_data, clustering_method, clustering_step, clustering_node_order, custom_code)
 
     # --- Unified graph figure callback for both tabs ---
     @app.callback(
@@ -295,10 +296,12 @@ def register_callbacks(app):
          Input('add-edge', 'n_clicks'),
          Input('remove-edge', 'n_clicks'),
          Input('generate-graph', 'n_clicks'),
-         Input('clear-graph', 'n_clicks'),
-         Input('alpha-slider', 'value'),
-         Input('e-input', 'value'),  # changed from e-slider to e-input
-         Input('k-slider', 'value')],
+        Input('clear-graph', 'n_clicks'),
+        Input('alpha-slider', 'value'),
+        Input('e-input', 'value'),  # changed from e-slider to e-input
+        Input('k-slider', 'value'),
+        Input('clustering-method', 'value'),
+        Input('clustering-code', 'value')],
         [State('graph-tools-store', 'data'),
          State('clustering-store', 'data'),
          State('node-id', 'value'),
@@ -312,7 +315,7 @@ def register_callbacks(app):
          State('rg-density', 'value')],
         prevent_initial_call=False
     )
-    def unified_store_update(tab, add_node, remove_node, add_edge, remove_edge, generate_graph, clear_graph, alpha, e, k,
+    def unified_store_update(tab, add_node, remove_node, add_edge, remove_edge, generate_graph, clear_graph, alpha, e, k, clustering_method, clustering_code,
                             graph_tools_data, clustering_data,
                             node_id, remove_node_id, edge_source, edge_target, remove_edge_source, remove_edge_target,
                             rg_graph_family, rg_num_nodes, rg_density):
@@ -343,15 +346,16 @@ def register_callbacks(app):
         # Clustering tab: update clustering-store
         elif tab == 'tab-clustering':
             if clustering_data is None:
-                clustering_data = {'clustering_method': 'spectral_lpa'}
+                clustering_data = {'clustering_method': clustering_method}
             # Fix: always provide a valid dict for .get
             graph_data = clustering_data.get('graph', graph_tools_data.get('graph', graph_tools_data))
             from graph_utils import run_clustering
-            cluster_labels, y_prime = run_clustering(graph_data, 'spectral_lpa', alpha=alpha, e=e, k=k, return_y=True)
+            cluster_labels, y_prime = run_clustering(graph_data, clustering_method, alpha=alpha, e=e, k=k, custom_code=clustering_code, return_y=True)
             clustering_data = {
                 'graph': graph_data,
                 'cluster_labels': cluster_labels,
-                'clustering_method': 'spectral_lpa',
+                'clustering_method': clustering_method,
+                'custom_code': clustering_code,
                 'alpha': alpha,
                 'e': e,
                 'k': k,

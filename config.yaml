@@ -22,7 +22,8 @@ controls:
   edge-target: {type: input, label: "Edge Target", id: edge-target, value: "2"}
   remove-edge-source: {type: input, label: "Remove Edge Source", id: remove-edge-source, value: "1"}
   remove-edge-target: {type: input, label: "Remove Edge Target", id: remove-edge-target, value: "2"}
-  clustering-method: {type: dropdown, label: "Clustering Method", id: clustering-method, options: [spectral_lpa], value: spectral_lpa}
+  clustering-method: {type: dropdown, label: "Clustering Method", id: clustering-method, options: [spectral_lpa, custom], value: spectral_lpa}
+  clustering-code: {type: textarea, label: "Custom Clustering Code", id: clustering-code, value: "", height: 150}
 
 # Tab definitions: which controls are visible in each tab
 # (You can add more tabs or controls as needed)
@@ -54,6 +55,7 @@ tabs:
       - e-input
       - k-slider
       - clustering-method
+      - clustering-code
       - add-node
       - remove-node
       - add-edge

@@ -85,3 +85,4 @@ DOCS_CONTENT = [
         html.Li(html.A("Scipy Spatial Documentation (Delaunay)", href="https://docs.scipy.org/doc/scipy/reference/spatial.html", target="_blank"))
     ])
 ]
+
