@@ -1,0 +1,74 @@
+# Modular Dash Graph Theory App Configuration
+stores:
+  - id: graph-tools-store
+  - id: clustering-store
+
+controls:
+  add-node: {type: button, label: "Add Node", id: add-node}
+  remove-node: {type: button, label: "Remove Node", id: remove-node}
+  add-edge: {type: button, label: "Add Edge", id: add-edge}
+  remove-edge: {type: button, label: "Remove Edge", id: remove-edge}
+  generate-graph: {type: button, label: "Generate Graph", id: generate-graph}
+  clear-graph: {type: button, label: "Clear Graph", id: clear-graph}
+  alpha-slider: {type: slider, label: "Alpha", id: alpha-slider, min: 0, max: 1, step: 0.05, value: 0.5}
+  e-input: {type: input, label: "Exponent (E)", id: e-input, value: -0.5, step: 0.1}
+  k-slider: {type: slider, label: "Iterations (K)", id: k-slider, min: 1, max: 20, step: 1, value: 5}
+  rg-graph-family: {type: dropdown, label: "Graph Family", id: rg-graph-family, options: [ER, BA, WS, SF, Star, Lattice, Delaunay], value: SF}
+  rg-num-nodes: {type: input, label: "Number of Nodes", id: rg-num-nodes, value: 10, min: 1}
+  rg-density: {type: slider, label: "Density / Probability", id: rg-density, min: 0, max: 1, step: 0.01, value: 0.3}
+  node-id: {type: input, label: "Node ID", id: node-id, value: "1"}
+  remove-node-id: {type: input, label: "Remove Node ID", id: remove-node-id, value: "1"}
+  edge-source: {type: input, label: "Edge Source", id: edge-source, value: "1"}
+  edge-target: {type: input, label: "Edge Target", id: edge-target, value: "2"}
+  remove-edge-source: {type: input, label: "Remove Edge Source", id: remove-edge-source, value: "1"}
+  remove-edge-target: {type: input, label: "Remove Edge Target", id: remove-edge-target, value: "2"}
+  clustering-method: {type: dropdown, label: "Clustering Method", id: clustering-method, options: [spectral_lpa], value: spectral_lpa}
+
+# Tab definitions: which controls are visible in each tab
+# (You can add more tabs or controls as needed)
+tabs:
+  - name: Graph Tools
+    value: tab-graph
+    controls:
+      - add-node
+      - remove-node
+      - add-edge
+      - remove-edge
+      - generate-graph
+      - clear-graph
+      - rg-graph-family
+      - rg-num-nodes
+      - rg-density
+      - node-id
+      - remove-node-id
+      - edge-source
+      - edge-target
+      - remove-edge-source
+      - remove-edge-target
+      - e-input
+      - k-slider
+  - name: Clustering
+    value: tab-clustering
+    controls:
+      - alpha-slider
+      - e-input
+      - k-slider
+      - clustering-method
+      - add-node
+      - remove-node
+      - add-edge
+      - remove-edge
+      - generate-graph
+      - clear-graph
+      - rg-graph-family
+      - rg-num-nodes
+      - rg-density
+      - node-id
+      - remove-node-id
+      - edge-source
+      - edge-target
+      - remove-edge-source
+      - remove-edge-target
+  - name: Documentation
+    value: tab-docs
+    controls: []
