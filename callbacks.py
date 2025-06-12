@@ -15,7 +15,7 @@ def register_callbacks(app):
         Input('clustering-store', 'data')
     )
     def _render_tab_content(tab, graph_data, clustering_store):
-        clustering_method = clustering_store.get('clustering_method', 'lpa') if clustering_store else 'lpa'
+        clustering_method = clustering_store.get('clustering_method', 'spectral_lpa') if clustering_store else 'spectral_lpa'
         clustering_step = clustering_store.get('clustering_step', 0) if clustering_store else 0
         clustering_node_order = clustering_store.get('clustering_node_order', '') if clustering_store else ''
         custom_code = clustering_store.get('custom_code') if clustering_store else None
