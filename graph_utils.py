@@ -4,6 +4,12 @@ import plotly.express as px
 import networkx as nx
 import numpy as np
 from scipy.spatial import Delaunay
+import traceback
+
+
+class CustomClusteringError(Exception):
+    """Exception raised when user supplied clustering code fails."""
+
 
 def empty_graph():
     """Return an empty graph data structure."""
@@ -43,13 +49,14 @@ def get_tab_layout(tab, graph_data, clustering_method='spectral_lpa', clustering
         cluster_labels = None
         y_prime = None
         if graph_data and graph_data.get('nodes'):
-            from graph_utils import run_clustering
+            from graph_utils import run_clustering, CustomClusteringError
             alpha = 0.5
             e = -0.5
             k = 5
             try:
                 cluster_labels, y_prime = run_clustering(graph_data, clustering_method, alpha=alpha, e=e, k=k, custom_code=custom_code, return_y=True)
-            except Exception:
+            except CustomClusteringError as exc:
+                print(exc)
                 cluster_labels, y_prime = None, None
         # Only show the main graph and clustering controls, not matrix/stacked/agg vizzes
         return html.Div([
@@ -176,8 +183,9 @@ def run_clustering(graph_data, method, alpha=0.5, e=-0.5, k=5, custom_code=None,
             if return_y:
                 return cluster_map, Y_out
             return cluster_map
-        except Exception:
-            pass
+        except Exception as exc:
+            traceback.print_exc()
+            raise CustomClusteringError(f"Failed to execute custom clustering code: {exc}") from exc
     # fallback: all nodes in one cluster
     if return_y:
         return {n: 0 for n in nodes}, Y
