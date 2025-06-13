@@ -74,11 +74,18 @@ def register_callbacks(app):
                     L = D_e @ A @ D_e
                     L = np.linalg.matrix_power(L, k_val) if k_val == int(k_val) else L
                     node_colors = np.diag(L)
+                    edge_colors = []
+                    for u, v in G.edges():
+                        if u in index and v in index:
+                            edge_colors.append(L[index[u], index[v]])
+                        else:
+                            edge_colors.append(0.0)
                     use_node_cmap = True
+                    use_edge_cmap = True
                 if node_colors is None or len(nodes) == 0 or (use_node_cmap and len(node_colors) != len(nodes)):
                     node_colors = "LightSkyBlue"
-                if edge_colors is None or (use_edge_cmap and len(edge_colors) != G.number_of_edges()):
-                    edge_colors = '#888'
+                if edge_colors is None:
+                    edge_colors = ['#888'] * G.number_of_edges()
                 if use_edge_cmap:
                     edge_color_vals = np.array(edge_colors)
                     if np.ptp(edge_color_vals) == 0:
