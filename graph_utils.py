@@ -35,7 +35,7 @@ def get_tab_layout(tab, graph_data, clustering_method='spectral_lpa', clustering
         from graph_utils import default_graph
         graph_data = default_graph()
     if tab == 'tab-graph':
-        # Graph Tools: Graph visualization, then all settings (generator, laplacian, ek-pairs, node/edge)
+        # Graph Tools: Graph visualization with generator and node/edge controls
         return html.Div([
             graph_visualization_layout(graph_data),
             html.Div([
@@ -58,7 +58,7 @@ def get_tab_layout(tab, graph_data, clustering_method='spectral_lpa', clustering
             except CustomClusteringError as exc:
                 print(exc)
                 cluster_labels, y_prime = None, None
-        # Only show the main graph and clustering controls, not matrix/stacked/agg vizzes
+        # Show graph with clustering controls
         return html.Div([
             html.Div([
                 dcc.Graph(id="graph", style={"height": "60vh"}),
