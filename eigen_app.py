@@ -1,7 +1,15 @@
 import dash
 from dash import dcc, html
 
-from graph_utils import default_graph
+
+# Import documentation content
+from eigen_documentation import DOCS_CONTENT
+from graph_utils import (
+    empty_graph,
+    default_graph,
+    render_tab_content,
+    update_graph_store
+)
 from callbacks import register_callbacks
 
 app = dash.Dash(__name__, suppress_callback_exceptions=True)
