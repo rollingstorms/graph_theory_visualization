@@ -46,6 +46,7 @@ tabs:
       - edge-target
       - remove-edge-source
       - remove-edge-target
+      - alpha-slider
       - e-input
       - k-slider
   - name: Clustering
