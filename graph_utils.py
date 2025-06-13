@@ -35,16 +35,10 @@ def get_tab_layout(tab, graph_data, clustering_method='spectral_lpa', clustering
         from graph_utils import default_graph
         graph_data = default_graph()
     if tab == 'tab-graph':
-        # Graph Tools: Graph visualization, then all settings (generator, laplacian, ek-pairs, node/edge)
+        # Only return the visualization components. Global controls are handled in eigen_app.
         return html.Div([
-            graph_visualization_layout(graph_data),
-            html.Div([
-                graph_generator_controls(),
-                laplacian_hyperparameters_controls(),
-                ek_pairs_controls(),
-                node_edge_controls()
-            ], style={"width": "40%", "overflowY": "auto", "height": "100vh", "padding": "10px", "borderLeft": "1px solid #ccc"})
-        ], style={"display": "flex"})
+            graph_visualization_layout(graph_data)
+        ], style={"width": "100%"})
     elif tab == 'tab-clustering':
         cluster_labels = None
         y_prime = None
@@ -58,16 +52,11 @@ def get_tab_layout(tab, graph_data, clustering_method='spectral_lpa', clustering
             except CustomClusteringError as exc:
                 print(exc)
                 cluster_labels, y_prime = None, None
-        # Only show the main graph and clustering controls, not matrix/stacked/agg vizzes
+        # Only return the clustering graph visualization. Controls are managed globally.
         return html.Div([
             html.Div([
                 dcc.Graph(id="graph", style={"height": "60vh"}),
-            ], style={"width": "70%"}),
-            html.Div([
-                graph_generator_controls(),
-                node_edge_controls(),
-                clustering_controls(tab)
-            ], style={"width": "30%", "overflowY": "auto", "height": "100vh", "padding": "10px", "borderLeft": "1px solid #ccc"})
+            ], style={"width": "100%"})
         ], style={"display": "flex"})
     elif tab == 'tab-docs':
         from eigen_documentation import DOCS_CONTENT
