@@ -54,8 +54,10 @@ def get_tab_layout(tab, graph_data, clustering_method='spectral_lpa', clustering
             except CustomClusteringError as exc:
                 print(exc)
                 cluster_labels, y_prime = None, None
+
         # Only show the main graph. The associated controls are provided by the
         # global wrappers defined in ``eigen_app.py``.
+        
         return html.Div([
             dcc.Graph(id="graph", style={"height": "60vh"})
         ])
